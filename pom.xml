@@ -38,7 +38,7 @@
       <!-- https://github.com/FasterXML/jackson-modules-java8/issues/81 -->
 
     <compiler.jdk.version>1.8</compiler.jdk.version>
-    <secore.version>4.0.15</secore.version>
+    <secore.version>4.0.20</secore.version>
     <telflow.fabric.version>11.7.0-SNAPSHOT</telflow.fabric.version>
     <telflow.cim.version>11.7.0-SNAPSHOT</telflow.cim.version>
     <telflow.cim.converter.version>11.0.2</telflow.cim.converter.version>
