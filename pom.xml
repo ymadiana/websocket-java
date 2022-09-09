@@ -1,0 +1,571 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.telflow.assembly</groupId>
+    <artifactId>assembly-parent-container</artifactId>
+    <version>11.6.12</version>
+  </parent>
+
+  <groupId>com.telflow</groupId>
+  <artifactId>quote-generator</artifactId>
+
+  <name>Telflow :: Quote Generator</name>
+  <description>Telflow: Quote Generator</description>
+
+  <scm>
+    <connection>scm:git:git://localhost/${basedir}</connection>
+  </scm>
+
+  <properties>
+    <revision>11.7.0</revision>
+    <changelist>-SNAPSHOT</changelist>
+
+    <component.name>quote-generator</component.name>
+
+    <defaultJavaOpts>-Xms256m -Xmx256m</defaultJavaOpts>
+    <mainClass>com.telflow.quotegenerator.Main</mainClass>
+
+    <component.home>/opt/telflow/${component.name}</component.home>
+    <app.name>telflow-${component.name}</app.name>
+
+      <!-- force consistent version of jackson libraries -->
+      <!-- Telflow declares 2.8.x, Secore 2.9.x. -->
+      <!-- Use The One That Seems To Work -->
+      <!-- https://github.com/FasterXML/jackson-modules-java8/issues/81 -->
+
+    <compiler.jdk.version>1.8</compiler.jdk.version>
+    <secore.version>4.0.15</secore.version>
+    <telflow.fabric.version>11.7.0-SNAPSHOT</telflow.fabric.version>
+    <telflow.cim.version>11.7.0-SNAPSHOT</telflow.cim.version>
+    <telflow.cim.converter.version>11.0.2</telflow.cim.converter.version>
+    <telflow-checkstyle-rules.version>2.0.8</telflow-checkstyle-rules.version>
+    <com.telflow.factory.version>2.5.0</com.telflow.factory.version>
+    <junit.version>5.7.0</junit.version>
+    <mockito.version>3.3.3</mockito.version>
+
+    <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-pmd-plugin.version>3.8</maven-pmd-plugin.version>
+    <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+    <findbugs.version>3.0.5</findbugs.version>
+    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+    <spotbugs.version>4.2.0</spotbugs.version>
+    <maven.build.helper.version>3.2.0</maven.build.helper.version>
+    <buildnumber-maven-plugin.version>1.4</buildnumber-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+    
+    <log4j.version>2.17.0</log4j.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-bom</artifactId>
+        <version>${log4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.zonky.test.postgres</groupId>
+        <artifactId>embedded-postgres-binaries-bom</artifactId>
+        <version>13.4.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+     </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
+  <dependencies>
+    <!-- consul needs its own special version of guava -->
+    <dependency>
+      <groupId>com.telflow.factory</groupId>
+      <artifactId>configuration-management</artifactId>
+      <version>${com.telflow.factory.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-kafka</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-http</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-restclient</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson-databind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-guava</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-parameter-names</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.cim</groupId>
+      <artifactId>cim</artifactId>
+      <version>${telflow.cim.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.cim.converter</groupId>
+      <artifactId>camel</artifactId>
+      <version>${telflow.cim.converter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.factory</groupId>
+      <artifactId>common</artifactId>
+      <version>${com.telflow.factory.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-kafka</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-http</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.inomial</groupId>
+          <artifactId>secore-restclient</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.inomial</groupId>
+      <artifactId>secore-health</artifactId>
+      <version>${secore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.inomial</groupId>
+      <artifactId>secore-http</artifactId>
+      <version>${secore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.inomial</groupId>
+      <artifactId>secore-kafka</artifactId>
+      <version>${secore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.telflow.fabric.test</groupId>
+      <artifactId>fabric-test</artifactId>
+      <version>${telflow.fabric.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- logging implementations: -->
+    <dependency>
+      <groupId>com.telflow.logging</groupId>
+      <artifactId>telflow-logging</artifactId>
+      <version>${telflow.assembly.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- some libraries use jul, redirect to slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- runtime logging implementation. -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Some libraries directly use log4j 1.x, but the JSON logger is built on log4j 2.x API -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Some libraries secore depend on use commons logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- ======================== Checkstyle ======================== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${maven-checkstyle-plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.dgitsystems.tools</groupId>
+            <artifactId>telflow-checkstyle-rules</artifactId>
+            <version>${telflow-checkstyle-rules.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>telflow/checkstyle.xml</configLocation>
+          <suppressionsLocation>telflow/suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <includeResources>false</includeResources>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <failOnViolation>true</failOnViolation>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ======================== PMD ======================== -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${maven-pmd-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>maven-pmd-plugin</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+              <goal>cpd-check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <rulesets>
+            <ruleset>/rulesets/java/basic.xml</ruleset>
+            <ruleset>/rulesets/java/braces.xml</ruleset>
+            <ruleset>/rulesets/java/clone.xml</ruleset>
+            <!-- codesize -->
+            <!-- comments -->
+            <!-- controversial -->
+            <!-- coupling -->
+            <!-- design -->
+            <ruleset>/rulesets/java/empty.xml</ruleset>
+            <ruleset>/rulesets/java/finalizers.xml</ruleset>
+            <ruleset>/rulesets/java/imports.xml</ruleset>
+            <!-- logging-java -->
+            <ruleset>/rulesets/java/junit.xml</ruleset>
+            <!-- naming -->
+            <!-- optimization -->
+            <ruleset>/rulesets/java/sunsecure.xml</ruleset>
+            <!-- strict exceptions -->
+            <ruleset>/rulesets/java/strings.xml</ruleset>
+            <ruleset>/rulesets/java/typeresolution.xml</ruleset>
+            <ruleset>/rulesets/java/unnecessary.xml</ruleset>
+            <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+            <!--
+                Commented above are additional rulesets that need testing, code changes, or configuration. See:
+                http://pmd.sourceforge.net/pmd-5.1.0/howtomakearuleset.html
+            -->
+          </rulesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${compiler.jdk.version}</source>
+          <target>${compiler.jdk.version}</target>
+          <encoding>UTF-8</encoding>
+          <compilerArgs>
+            <arg>-parameters</arg>
+            <arg>-Xlint</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <!-- ======================== Spotbugs ======================== -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs.version}</version>
+        <configuration>
+          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotbugs-maven-plugin</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>${docker-maven-plugin.version}</version>
+        <configuration>
+          <imagePullPolicy>Always</imagePullPolicy>
+          <images>
+            <image>
+              <external>
+                <type>properties</type>
+                <mode>fallback</mode>
+              </external>
+              <build>
+                <dockerFile>${project.basedir}/docker/Dockerfile.telflow</dockerFile>
+                <assembly>
+                  <descriptorRef>artifact-with-dependencies</descriptorRef>
+                </assembly>
+                <args>
+                  <component>${component.name}</component>
+                  <version>${docker.preciseVersion}</version>
+                  <defaultJavaOpts>${defaultJavaOpts}</defaultJavaOpts>
+                  <mainClass>${mainClass}</mainClass>
+                  <BUILD_DATE>${build.time}</BUILD_DATE>
+                  <BUILD_VERSION>${buildNumber}</BUILD_VERSION>
+                </args>
+              </build>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>build docker image</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <!-- The deploy execution is contained in the deployDockerImage profile -->
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${maven.build.helper.version}</version>
+        <executions>
+          <execution>
+            <id>parse-version</id>
+            <goals>
+              <goal>parse-version</goal>
+              <goal>cpu-count</goal>
+            </goals>
+            <configuration>
+              <propertyPrefix>project.version</propertyPrefix>
+              <versionString>${project.version}</versionString>
+            </configuration>
+          </execution>
+          <execution>
+            <id>timestamp-property</id>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <configuration>
+              <name>build.time</name>
+              <locale>en_AU</locale>
+              <pattern>yyyy-MM-dd HH:mm z</pattern>
+              <timeZone>Australia/Melbourne</timeZone>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>${buildnumber-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>extract-git-information</id>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-deploy</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <configuration>
+              <mainClass>${mainClass}</mainClass>
+              <arguments>
+                <argument>${exec.args}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Internal Releases</name>
+      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories//dgit-maven-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>nexus-snapshots</id>
+      <name>Internal Releases</name>
+      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories//dgit-maven-snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>inomial-nexus</id>
+      <name>Inomial Releases</name>
+      <url>https://maven.inomial.com</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>nexus-releases</id>
+      <name>Internal Releases</name>
+      <url>https://nexus.office.dgit.biz:8443/nexus/content/repositories//dgit-maven-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>inomial-nexus</id>
+      <name>Inomial Releases</name>
+      <url>https://maven.inomial.com</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

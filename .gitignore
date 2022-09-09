@@ -1,23 +1,46 @@
-# Compiled class file
-*.class
 
-# Log file
-*.log
+# .gitignore stops certain file patterns from ever becoming tracked by Git.
+# Syntax for .gitignore is documented at <https://git-scm.com/docs/gitignore>
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
+.gradle
+.classes
+.settings
+classes
+build
+*.ipr
+*.iws
 *.war
-*.nar
-*.ear
-*.zip
+*.jar
+*.log
 *.tar.gz
-*.rar
+*.tgz
+*.zip
+.DS_Store
+.idea
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Eclipse project meta-files
+**/.classpath
+**/.project
+**/.settings
+**/classes/
+**/bin
+**/.externalToolBuilders
+
+# In UNIX convention, a filename that ends in tilde is considered a backup of something.
+**/*~
+
+gradlew.bat
+docker/GROW
+
+# Postgresql dump files
+**/*.pgc
+
+# Vim temporary files
+**/*.swp
+
+# Maven
+target
+.mvn
+
+*.idea
+*.iml

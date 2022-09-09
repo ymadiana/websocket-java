@@ -1,0 +1,43 @@
+
+# Move the telflow-logging dep into a subdirectory so that we can put it after
+# all the other deps on the classpath. This is to stop unwanted Jackson class
+# files being laoded from the logging jar instead of the relevant Jackson jar.
+#
+# In the future we would like to unify Jackson versions between secore and
+# Telflow assembly so that no logging dependency embedding is needed.
+FROM registry.cloud.telflow.com/dgit_private/alpine_tf_java:11 AS maven_files
+COPY maven /maven
+RUN mkdir /maven/telflow-common \
+    && mv /maven/*telflow-logging* /maven/telflow-common
+
+FROM registry.cloud.telflow.com/dgit_private/alpine_tf_java:11
+
+ARG version
+ARG component
+ARG defaultJavaOpts
+ARG mainClass
+ARG BUILD_DATE
+ARG BUILD_VERSION
+
+ENV APPLICATION_JAR_PATH "/opt/telflow/$component/lib"
+ENV DEFAULT_JAVA_OPTS $defaultJavaOpts
+ENV JAVA_OPTS ""
+
+# No authentication required for this microservice
+ENV DISABLE_AUTH_HTTP true
+
+COPY --chown=telflow:telflow --from=maven_files /maven $APPLICATION_JAR_PATH
+
+RUN install -o telflow -g telflow -m 0755 -d /opt/telflow/log
+
+# VOLUME /data
+
+USER telflow
+ENTRYPOINT java -cp "$APPLICATION_JAR_PATH/*:$APPLICATION_JAR_PATH/telflow-common/*" $DEFAULT_JAVA_OPTS $JAVA_OPTS ${mainClass}
+
+LABEL Maintainer="DGIT Systems"
+LABEL Application=Telflow
+LABEL Component=$component
+LABEL com.telflow.build-version=$version
+LABEL org.label-schema.vcs-ref=$BUILD_VERSION
+LABEL org.label-schema.build-date=$BUILD_DATE
