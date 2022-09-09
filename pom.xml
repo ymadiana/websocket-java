@@ -12,6 +12,7 @@
 
   <groupId>com.telflow</groupId>
   <artifactId>quote-generator</artifactId>
+  <version>${revision}${changelist}</version>
 
   <name>Telflow :: Quote Generator</name>
   <description>Telflow: Quote Generator</description>
