@@ -18,7 +18,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * Main entry point to Quote Generator
- * 
+ *
  * @author Sandeep Vasani
  */
 public class Main {
@@ -37,7 +37,7 @@ public class Main {
 
     /**
      * The main entry point for the application.
-     * 
+     *
      * @param args Any command line arguments that have been passed.
      */
     public static void main(String[] args) {
@@ -49,7 +49,7 @@ public class Main {
         LOG.info("Starting Quote generator");
         try {
             initConsul();
-            
+
             setupQuoteGenerator();
             LOG.info("Quote generator started");
         } catch (Exception | Error ie) {
@@ -106,8 +106,10 @@ public class Main {
         MESSAGE_CONSUMER.addMessageHandler(ConsulManager.getAppKey(ConsulKeys.APP_INBOX_TOPIC), listener, Scope.NONE);
         MESSAGE_CONSUMER.start(APP_NAME);
 
-        LOG.trace("Initialised a consumer for showcase quote generator: ID: {}, Name: {}",
-            MESSAGE_CONSUMER.getId(), MESSAGE_CONSUMER.getName());
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Initialised a consumer for showcase quote generator: ID: {}, Name: {}",
+                MESSAGE_CONSUMER.getId(), MESSAGE_CONSUMER.getName());
+        }
     }
 
     private static Map<String, String> getDefaults() {

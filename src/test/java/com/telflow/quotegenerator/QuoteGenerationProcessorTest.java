@@ -26,15 +26,12 @@ import biz.dgit.schemas.telflow.cim.v3.PartyInteractionRoles;
 import biz.dgit.schemas.telflow.cim.v3.PartyRole;
 import biz.dgit.schemas.telflow.cim.v3.PartyRolePartyRoleType;
 import biz.dgit.schemas.telflow.cim.v3.QuoteSummary;
-
 import com.telflow.cim.converter.CimConverter;
 import com.telflow.cim.converter.impl.CimConverterImpl;
 import com.telflow.fabric.test.FabricTestHelper;
 import com.telflow.factory.common.helper.FabricHelper;
-
 import java.io.IOException;
 import java.util.List;
-import javax.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,18 +41,10 @@ import org.mockito.ArgumentCaptor;
  */
 public class QuoteGenerationProcessorTest {
 
-    private static CimConverter CIM_CONVERTER;
-
-    static {
-        try {
-            CIM_CONVERTER = new CimConverterImpl(); 
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final CimConverter CIM_CONVERTER = new CimConverterImpl();
 
     private BusinessInteraction biTemplate;
-    
+
     private BusinessInteraction biTemplateNoVersion;
 
     private FabricHelper mockFabricHelper;
@@ -69,7 +58,7 @@ public class QuoteGenerationProcessorTest {
                 .withInteractionRoleType(PartyInteractionRolePartyInteractionRoleType.COMMERCIALLY_RESPONSIBLE)
                 .withPartyRole(new PartyRole().withType(PartyRolePartyRoleType.SYSTEM))))
             .withQuote(new QuoteSummary().withVersion("1"));
-        
+
         this.biTemplateNoVersion = new BusinessInteraction()
                 .withID("ORD123")
                 .withBusinessInteractionInvolves(new PartyInteractionRoles()
@@ -119,7 +108,7 @@ public class QuoteGenerationProcessorTest {
 
         assertThat(notifyRequest.getTemplate().getID(), is("myTemplate"));
     }
-    
+
     @Test
     public void testNotifyRequestNoVersion() throws IOException {
         BusinessInteractionNotification notification =

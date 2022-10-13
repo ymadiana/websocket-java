@@ -149,7 +149,7 @@ public class QuoteGenerationProcessor {
     }
 
     private Exception sendNotification(ManageEntityNotification manageEntityNotification) {
-        OperationResponse notifyResponse = null;
+        OperationResponse notifyResponse;
         try {
             String response = this.fabricHelper.post(this.cimConverter.marshal(manageEntityNotification),
                 "OnDemandNotification", MEDIATYPE_APPLICATION_XML);
@@ -179,7 +179,7 @@ public class QuoteGenerationProcessor {
         return response.getBusinessInteraction();
     }
 
-    @SuppressWarnings("checkstyle:methodlength")
+    //@SuppressWarnings("checkstyle:methodlength")
     private BusinessInteraction updateBusinessInteraction(BusinessInteraction bi, Exception exception,
         boolean updateException) throws IOException {
 
@@ -201,11 +201,15 @@ public class QuoteGenerationProcessor {
                 bi.getInteractionStatus() != null && END_STATES.contains(bi.getInteractionStatus().getType())) {
                 return null;
             }
-            
+
             newBi.withQuote(summary.withVersion(updateContractVersion(summary.getVersion()))
                 .withQuotedDate(CimDateUtil.toXMLGregorianCalendar(new Date())));
         }
+        return send(newBi, bi, exception);
+    }
 
+    private BusinessInteraction send(BusinessInteraction newBi, BusinessInteraction bi, Exception exception)
+        throws IOException {
         ManageBusinessInteractionRequest mbir = new ManageBusinessInteractionRequest()
             .withUser(new PartyRole().withType(PartyRolePartyRoleType.SYSTEM))
             .withRequestParameter(new CustomerOrderRequestParameter().withIncludeInventory(true))
