@@ -23,7 +23,7 @@
   </scm>
 
   <properties>
-    <revision>11.7.0</revision>
+    <revision>11.8.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <component.name>quote-generator</component.name>
@@ -34,8 +34,8 @@
     <component.home>/opt/telflow/${component.name}</component.home>
     <app.name>telflow-${component.name}</app.name>
 
-    <telflow.fabric.version>11.7.0-SNAPSHOT</telflow.fabric.version>
-    <telflow.cim.version>11.7.0-SNAPSHOT</telflow.cim.version>
+    <telflow.fabric.version>11.8.0-SNAPSHOT</telflow.fabric.version>
+    <telflow.cim.version>11.8.0-SNAPSHOT</telflow.cim.version>
     <telflow.cim.converter.version>11.7.0</telflow.cim.converter.version>
   </properties>
 
