@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.telflow.assembly</groupId>
     <artifactId>assembly-parent-container</artifactId>
-    <version>11.7.3</version>
+    <version>11.7.4</version>
     <relativePath/>
   </parent>
 
