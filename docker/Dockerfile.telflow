@@ -10,6 +10,9 @@ ARG BUILD_VERSION
 ENV APPLICATION_JAR_PATH "/opt/telflow/$component/lib"
 ENV DEFAULT_JAVA_OPTS $defaultJavaOpts
 ENV JAVA_OPTS ""
+ENV APP_NAME $component
+ENV CONSUL_SERVER http://consul:8500
+
 
 # No authentication required for this microservice
 ENV DISABLE_AUTH_HTTP true
