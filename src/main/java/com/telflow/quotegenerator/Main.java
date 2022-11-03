@@ -25,7 +25,7 @@ public class Main {
 
     private static transient Logger LOG;
 
-    private static final String APP_NAME = "telflow-quote-generator";
+    private static final String APP_NAME = "quote-generator";
 
     private static MessageConsumer MESSAGE_CONSUMER;
 
@@ -117,11 +117,11 @@ public class Main {
         Map<String, String> defaultValues = new HashMap<>();
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_INBOX_TOPIC), "telflow.notification");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PROTOCOL), "http");
-        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_HOST), "localhost");
+        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_HOST), "telflow-fabric");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PORT), "9797");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_USER), "");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_PASSWORD), "");
-        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT), "kafka:9092");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT), "telflow-kafka-bootstrap:9092");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_TRANSITION_ACTION), "generateQuote");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE), "PDF Attach Artefact Template");
         return defaultValues;
