@@ -1,6 +1,11 @@
 package com.telflow.quotegenerator;
 
+import com.inomial.secore.health.Healthcheck;
+import com.inomial.secore.health.HealthcheckServer;
+import com.inomial.secore.health.InitialisedHealthCheck;
+import com.inomial.secore.health.kafka.KafkaHealthcheck;
 import com.inomial.secore.kafka.MessageConsumer;
+import com.inomial.secore.mon.MonitoringServer;
 import com.inomial.secore.scope.Scope;
 import com.telflow.factory.common.exception.InitialisationException;
 import com.telflow.factory.common.helper.FabricHelper;
@@ -22,6 +27,15 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  * @author Sandeep Vasani
  */
 public class Main {
+    /**
+     * health check
+     */
+    private static final InitialisedHealthCheck INITIALISED_HEALTH_CHECK = new InitialisedHealthCheck();
+
+    /**
+     * health check server
+     */
+    private static HealthcheckServer HEALTHCHECK;
 
     private static transient Logger LOG;
 
@@ -49,8 +63,10 @@ public class Main {
         LOG.info("Starting Quote generator");
         try {
             initConsul();
+            HEALTHCHECK = new HealthcheckServer();
 
             setupQuoteGenerator();
+            INITIALISED_HEALTH_CHECK.initialised();
             LOG.info("Quote generator started");
         } catch (Exception | Error ie) {
             LOG.error("Failed to initialise application, exiting.", ie);
@@ -88,6 +104,7 @@ public class Main {
     }
 
     private static void setupQuoteGenerator() {
+        INITIALISED_HEALTH_CHECK.starting();
         initFabricHelper();
 
         // Kafka configuration
@@ -106,6 +123,8 @@ public class Main {
         MESSAGE_CONSUMER.addMessageHandler(ConsulManager.getAppKey(ConsulKeys.APP_INBOX_TOPIC), listener, Scope.NONE);
         MESSAGE_CONSUMER.start(APP_NAME);
 
+        INITIALISED_HEALTH_CHECK.initialised();
+        startHealthCheckServer();
         if (LOG.isTraceEnabled()) {
             LOG.trace("Initialised a consumer for showcase quote generator: ID: {}, Name: {}",
                 MESSAGE_CONSUMER.getId(), MESSAGE_CONSUMER.getName());
@@ -124,7 +143,22 @@ public class Main {
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT), "telflow-kafka-bootstrap:9092");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_TRANSITION_ACTION), "generateQuote");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE), "PDF Attach Artefact Template");
+        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.HEALTHCHECK_WAIT), "150");
+        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.HEALTHCHECK_PORT),
+            Integer.toString(MonitoringServer.DEFAULT_PORT));
         return defaultValues;
     }
 
+    private static void startHealthCheckServer() {
+        Map<String, Healthcheck> checks = new HashMap<>();
+        checks.put("initialised", Main.INITIALISED_HEALTH_CHECK);
+
+        checks.put("kafka", new KafkaHealthcheck(
+            ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT),
+            Long.parseLong(ConsulManager.getAppKey(ConsulKeys.HEALTHCHECK_WAIT))));
+
+        long wait = Long.parseLong(ConsulManager.getAppKey(ConsulKeys.HEALTHCHECK_WAIT));
+        int port = Integer.parseInt(ConsulManager.getAppKey(ConsulKeys.HEALTHCHECK_PORT));
+        Main.HEALTHCHECK.startServer(APP_NAME, checks, wait, port);
+    }
 }

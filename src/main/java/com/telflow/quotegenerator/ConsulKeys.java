@@ -52,6 +52,17 @@ public class ConsulKeys {
      */
     public static final String APP_NOTIFY_TEMPLATE = "/notifyTemplate";
 
+
+    /**
+     * healcheck wait interval
+     */
+    public static final String HEALTHCHECK_WAIT = "/healthcheck/perCheckMaxWait";
+
+    /**
+     * healthcheck http port
+     */
+    public static final String HEALTHCHECK_PORT = "/healthcheck/port";
+
     private ConsulKeys() {
         // do nothing
     }
