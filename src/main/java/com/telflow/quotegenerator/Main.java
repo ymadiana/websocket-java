@@ -103,13 +103,20 @@ public class Main {
         );
     }
 
+    private static String getKafkaEndpoint() {
+        return String.format("%s://%s:%s",
+            ConsulManager.getAppKey(ConsulKeys.ENV_KAFKA_PROTOCOL),
+            ConsulManager.getAppKey(ConsulKeys.ENV_KAFKA_HOST),
+            ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_PORT));
+    }
+
     private static void setupQuoteGenerator() {
         INITIALISED_HEALTH_CHECK.starting();
         initFabricHelper();
 
         // Kafka configuration
         Map<String, Object> cp = new HashMap<>();
-        cp.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT));
+        cp.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaEndpoint());
         cp.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 
         if (MESSAGE_CONSUMER != null) {
@@ -140,7 +147,9 @@ public class Main {
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PORT), "9797");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_USER), "");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_PASSWORD), "");
-        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT), "telflow-kafka-bootstrap:9092");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PROTOCOL), "");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_HOST), "telflow-kafka-bootstrap");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PORT), "9092");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_TRANSITION_ACTION), "generateQuote");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE), "PDF Attach Artefact Template");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.HEALTHCHECK_WAIT), "150");
@@ -154,7 +163,7 @@ public class Main {
         checks.put("initialised", Main.INITIALISED_HEALTH_CHECK);
 
         checks.put("kafka", new KafkaHealthcheck(
-            ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_ENDPOINT),
+            getKafkaEndpoint(),
             Long.parseLong(ConsulManager.getAppKey(ConsulKeys.HEALTHCHECK_WAIT))));
 
         long wait = Long.parseLong(ConsulManager.getAppKey(ConsulKeys.HEALTHCHECK_WAIT));

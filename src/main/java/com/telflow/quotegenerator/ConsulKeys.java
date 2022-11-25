@@ -38,9 +38,19 @@ public class ConsulKeys {
     public static final String ENV_FABRIC_PASSWORD = "/fabric/secure/esbHttpPassword";
 
     /**
-     * The endpoint for kafka. Used by anything that requires kafka access
+     * Kafka protocol.
      */
-    public static final String ENV_KAFKA_ENDPOINT = "/kafka/kafkaEndpoint";
+    public static final String ENV_KAFKA_PROTOCOL = "/kafka/protocol";
+
+    /**
+     * Kafka host.
+     */
+    public static final String ENV_KAFKA_HOST = "/kafka/host";
+
+    /**
+     * Kafka port.
+     */
+    public static final String ENV_KAFKA_PORT = "/kafka/port";
 
     /**
      * Transition Action for which to generate Quote
