@@ -6,4 +6,6 @@ This application listens to BI Notification and Generate OnDemandNotification an
 #### Building the Application
 - Build with `mvn clean install`.
 
-
+####Running the Application
+- ./bin/configure_local.sh
+- ./bin/run.sh

@@ -41,6 +41,8 @@ public class Main {
 
     private static final String APP_NAME = "quote-generator";
 
+    private static final String HTTP = "http";
+
     private static MessageConsumer MESSAGE_CONSUMER;
 
     private static FabricHelper FABRIC_HELPER;
@@ -66,7 +68,6 @@ public class Main {
             HEALTHCHECK = new HealthcheckServer();
 
             setupQuoteGenerator();
-            INITIALISED_HEALTH_CHECK.initialised();
             LOG.info("Quote generator started");
         } catch (Exception | Error ie) {
             LOG.error("Failed to initialise application, exiting.", ie);
@@ -105,8 +106,8 @@ public class Main {
 
     private static String getKafkaEndpoint() {
         return String.format("%s://%s:%s",
-            ConsulManager.getAppKey(ConsulKeys.ENV_KAFKA_PROTOCOL),
-            ConsulManager.getAppKey(ConsulKeys.ENV_KAFKA_HOST),
+            ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_PROTOCOL),
+            ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_HOST),
             ConsulManager.getEnvKey(ConsulKeys.ENV_KAFKA_PORT));
     }
 
@@ -129,7 +130,6 @@ public class Main {
             ConsulManager.getAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE));
         MESSAGE_CONSUMER.addMessageHandler(ConsulManager.getAppKey(ConsulKeys.APP_INBOX_TOPIC), listener, Scope.NONE);
         MESSAGE_CONSUMER.start(APP_NAME);
-
         INITIALISED_HEALTH_CHECK.initialised();
         startHealthCheckServer();
         if (LOG.isTraceEnabled()) {
@@ -142,12 +142,12 @@ public class Main {
         ConsulManager.setAppName(APP_NAME);
         Map<String, String> defaultValues = new HashMap<>();
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_INBOX_TOPIC), "telflow.notification");
-        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PROTOCOL), "http");
+        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PROTOCOL), HTTP);
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_HOST), "telflow-fabric");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PORT), "9797");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_USER), "");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_PASSWORD), "");
-        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PROTOCOL), "");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PROTOCOL), HTTP);
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_HOST), "telflow-kafka-bootstrap");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PORT), "9092");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_TRANSITION_ACTION), "generateQuote");
