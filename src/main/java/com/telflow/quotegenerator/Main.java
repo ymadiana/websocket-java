@@ -93,8 +93,8 @@ public class Main {
 
     private static void initFabricHelper() {
         String endpoint = String.format("%s://%s:%s/api/",
-            ConsulManager.getAppKey(ConsulKeys.ENV_FABRIC_PROTOCOL),
-            ConsulManager.getAppKey(ConsulKeys.ENV_FABRIC_HOST),
+            ConsulManager.getEnvKey(ConsulKeys.ENV_FABRIC_PROTOCOL),
+            ConsulManager.getEnvKey(ConsulKeys.ENV_FABRIC_HOST),
             ConsulManager.getEnvKey(ConsulKeys.ENV_FABRIC_PORT));
         LOG.info("Fabric: {}", endpoint);
         FABRIC_HELPER = new FabricHelper(
