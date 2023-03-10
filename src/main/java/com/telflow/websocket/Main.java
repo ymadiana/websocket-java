@@ -1,4 +1,4 @@
-package com.telflow.quotegenerator;
+package com.telflow.websocket;
 
 import com.inomial.secore.health.Healthcheck;
 import com.inomial.secore.health.HealthcheckServer;
@@ -10,7 +10,7 @@ import com.inomial.secore.scope.Scope;
 import com.telflow.factory.common.exception.InitialisationException;
 import com.telflow.factory.common.helper.FabricHelper;
 import com.telflow.factory.configuration.management.ConsulManager;
-import com.telflow.quotegenerator.listener.NotificationListener;
+import com.telflow.websocket.listener.NotificationListener;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -124,10 +124,10 @@ public class Main {
             MESSAGE_CONSUMER.shutdown();
         }
         MESSAGE_CONSUMER = new MessageConsumer(cp);
+        
+        WebsocketServer server = new WebsocketServer();
 
-        NotificationListener listener = new NotificationListener(FABRIC_HELPER,
-            ConsulManager.getAppKey(ConsulKeys.APP_TRANSITION_ACTION),
-            ConsulManager.getAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE));
+        NotificationListener listener = new NotificationListener(server);
         MESSAGE_CONSUMER.addMessageHandler(ConsulManager.getAppKey(ConsulKeys.APP_INBOX_TOPIC), listener, Scope.NONE);
         MESSAGE_CONSUMER.start(APP_NAME);
         INITIALISED_HEALTH_CHECK.initialised();
@@ -143,15 +143,13 @@ public class Main {
         Map<String, String> defaultValues = new HashMap<>();
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_INBOX_TOPIC), "telflow.notification");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PROTOCOL), HTTP);
-        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_HOST), "telflow-fabric");
+        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_HOST), "10.232.3.118");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.ENV_FABRIC_PORT), "9797");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_USER), "");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_FABRIC_PASSWORD), "");
         defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PROTOCOL), HTTP);
-        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_HOST), "telflow-kafka-bootstrap");
-        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PORT), "9092");
-        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_TRANSITION_ACTION), "generateQuote");
-        defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.APP_NOTIFY_TEMPLATE), "PDF Attach Artefact Template");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_HOST), "10.232.3.118");
+        defaultValues.put(ConsulManager.buildEnvKey(ConsulKeys.ENV_KAFKA_PORT), "9093");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.HEALTHCHECK_WAIT), "150");
         defaultValues.put(ConsulManager.buildAppKey(ConsulKeys.HEALTHCHECK_PORT),
             Integer.toString(MonitoringServer.DEFAULT_PORT));

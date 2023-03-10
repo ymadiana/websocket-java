@@ -12,11 +12,11 @@
   </parent>
 
   <groupId>com.telflow</groupId>
-  <artifactId>quote-generator</artifactId>
+  <artifactId>websocket-java</artifactId>
   <version>${revision}${changelist}</version>
 
-  <name>Telflow :: Quote Generator</name>
-  <description>Telflow: Quote Generator</description>
+  <name>Telflow :: Websocket Sender</name>
+  <description>Telflow: Websocket Sender</description>
 
   <scm>
     <connection>scm:git:git://localhost/${basedir}</connection>
@@ -26,10 +26,10 @@
     <revision>11.8.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
-    <component.name>quote-generator</component.name>
+    <component.name>websocket-java</component.name>
 
     <defaultJavaOpts>-Xms256m -Xmx256m</defaultJavaOpts>
-    <mainClass>com.telflow.quotegenerator.Main</mainClass>
+    <mainClass>com.telflow.websocket.Main</mainClass>
 
     <component.home>/opt/telflow/${component.name}</component.home>
     <app.name>telflow-${component.name}</app.name>
@@ -134,6 +134,11 @@
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.websocket</groupId>
+      <artifactId>javax.websocket-api</artifactId>
+      <version>1.1</version>
     </dependency>
 
     <!-- logging implementations: -->
@@ -276,6 +281,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.2.24.v20180105</version>
+        <configuration>
+            <webApp>
+                <contextPath>/example</contextPath>
+            </webApp>
+        </configuration>
       </plugin>
     </plugins>
   </build>

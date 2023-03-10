@@ -1,4 +1,4 @@
-package com.telflow.quotegenerator;
+package com.telflow.websocket;
 
 /**
  * Consul Keys used by Quote Generator
